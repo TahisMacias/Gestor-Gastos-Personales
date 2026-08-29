@@ -1,14 +1,152 @@
 /* Ajustes de estilo específicos de la aplicación, complementando a
-   Bootstrap 5 (usado para el grid, componentes y utilidades). */
+   Bootstrap 5 (usado para el grid, componentes y utilidades) y a
+   los tokens definidos en index.css. */
 
 main {
   max-width: 1100px;
 }
 
+/* --- Navbar: cubierta de "libro de cuentas" --- */
+.ledger-navbar {
+  background: linear-gradient(135deg, var(--brand-dark) 0%, #163a2d 100%);
+  border-bottom: 3px solid var(--gold);
+}
+
+.ledger-navbar .navbar-brand {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.ledger-navbar .balance-badge {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* --- Tarjetas generales --- */
+.card {
+  border: 1px solid #dde5df;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* Encabezado de sección con subrayado dorado, el detalle
+   distintivo que recorre toda la interfaz. */
+.section-title {
+  display: inline-flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+}
+
+.section-title::after {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 3px;
+  margin-top: 0.35rem;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+/* --- Tarjetas de estadísticas: borde izquierdo de color en vez
+   del relleno "subtle" plano de Bootstrap por defecto. --- */
+.stat-card {
+  background: #fff;
+  border-radius: var(--bs-border-radius);
+  padding: 1.1rem 1.25rem;
+  height: 100%;
+  border: 1px solid #e2e8e3;
+  border-left: 5px solid var(--accent, var(--brand));
+}
+
+.stat-card .stat-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7a70;
+}
+
+.stat-card .stat-value {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Distribución por categoría --- */
+.progress {
+  background-color: #e6ece7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
 .progress-bar {
-  transition: width 0.4s ease;
+  transition: width 0.5s ease;
+  border-radius: 999px;
+}
+
+/* --- Tabla de movimientos --- */
+.table-hover tbody tr {
+  animation: fila-aparece 0.25s ease;
 }
 
 .table-hover tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: #f2f6f3;
+}
+
+.table thead th {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7a70;
+  border-bottom-width: 2px;
+}
+
+@keyframes fila-aparece {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* --- Acciones de la tabla: íconos discretos, sin recuadro --- */
+.btn-action {
+  border: none;
+  background: transparent;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #8a978f;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  margin-left: 0.15rem;
+}
+
+.btn-action-edit:hover,
+.btn-action-edit:focus-visible {
+  color: var(--gold);
+  background-color: #f5e9cf;
+}
+
+.btn-action-delete:hover,
+.btn-action-delete:focus-visible {
+  color: var(--bad);
+  background-color: #f6dede;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .table-hover tbody tr,
+  .progress-bar {
+    animation: none;
+    transition: none;
+  }
 }

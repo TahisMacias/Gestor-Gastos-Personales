@@ -109,7 +109,9 @@ function App() {
 
         <div className="card shadow-sm">
           <div className="card-body">
-            <h2 className="h5 card-title mb-3">Historial de movimientos</h2>
+            <h2 className="h5 card-title section-title">
+              <span>Historial de movimientos</span>
+            </h2>
 
             <div className="row g-2 mb-3">
               <div className="col-md-5">

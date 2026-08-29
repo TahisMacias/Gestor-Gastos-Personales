@@ -29,49 +29,39 @@ function Statistics({ transacciones }) {
   return (
     <div className="card shadow-sm mb-4">
       <div className="card-body">
-        <h2 className="h5 card-title mb-3">
-          <i className="bi bi-bar-chart-fill me-2"></i>
-          Estadísticas
+        <h2 className="h5 card-title section-title">
+          <span>
+            <i className="bi bi-bar-chart-fill me-2"></i>
+            Estadísticas
+          </span>
         </h2>
 
         <div className="row g-3 mb-4">
           <div className="col-md-4">
-            <div className="p-3 bg-success-subtle rounded text-center h-100">
-              <div className="text-success small fw-semibold">
-                TOTAL INGRESOS
-              </div>
-              <div className="fs-4 fw-bold text-success">
+            <div className="stat-card" style={{ "--accent": "var(--ok)" }}>
+              <div className="stat-label">Total ingresos</div>
+              <div className="stat-value" style={{ color: "var(--ok)" }}>
                 {formatearMoneda(totalIngresos)}
               </div>
             </div>
           </div>
           <div className="col-md-4">
-            <div className="p-3 bg-danger-subtle rounded text-center h-100">
-              <div className="text-danger small fw-semibold">
-                TOTAL GASTOS
-              </div>
-              <div className="fs-4 fw-bold text-danger">
+            <div className="stat-card" style={{ "--accent": "var(--bad)" }}>
+              <div className="stat-label">Total gastos</div>
+              <div className="stat-value" style={{ color: "var(--bad)" }}>
                 {formatearMoneda(totalGastos)}
               </div>
             </div>
           </div>
           <div className="col-md-4">
             <div
-              className={`p-3 rounded text-center h-100 ${
-                balance >= 0 ? "bg-primary-subtle" : "bg-warning-subtle"
-              }`}
+              className="stat-card"
+              style={{ "--accent": balance >= 0 ? "var(--brand)" : "var(--gold)" }}
             >
+              <div className="stat-label">Balance</div>
               <div
-                className={`small fw-semibold ${
-                  balance >= 0 ? "text-primary" : "text-warning-emphasis"
-                }`}
-              >
-                BALANCE
-              </div>
-              <div
-                className={`fs-4 fw-bold ${
-                  balance >= 0 ? "text-primary" : "text-warning-emphasis"
-                }`}
+                className="stat-value"
+                style={{ color: balance >= 0 ? "var(--brand)" : "var(--gold)" }}
               >
                 {formatearMoneda(balance)}
               </div>
@@ -79,7 +69,9 @@ function Statistics({ transacciones }) {
           </div>
         </div>
 
-        <h3 className="h6 mb-3">Distribución de gastos por categoría</h3>
+        <h3 className="h6 section-title">
+          <span>Distribución de gastos por categoría</span>
+        </h3>
 
         {categoriasOrdenadas.length === 0 ? (
           <p className="text-muted small mb-0">

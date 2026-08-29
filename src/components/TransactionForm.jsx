@@ -92,8 +92,8 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
   return (
     <div className="card shadow-sm mb-4">
       <div className="card-body">
-        <h2 className="h5 card-title mb-3">
-          {transaccionEditar ? "Editar registro" : "Nuevo registro"}
+        <h2 className="h5 card-title section-title">
+          <span>{transaccionEditar ? "Editar registro" : "Nuevo registro"}</span>
         </h2>
 
         <form onSubmit={manejarEnvio} noValidate>

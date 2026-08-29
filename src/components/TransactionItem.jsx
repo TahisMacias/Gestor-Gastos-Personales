@@ -26,20 +26,24 @@ function TransactionItem({ transaccion, onEditar, onEliminar }) {
         </span>
       </td>
       <td>{formatearFecha(transaccion.fecha)}</td>
-      <td className={`fw-semibold ${esIngreso ? "text-success" : "text-danger"}`}>
+      <td
+        className={`money fw-semibold ${
+          esIngreso ? "text-success" : "text-danger"
+        }`}
+      >
         {esIngreso ? "+" : "-"}
         {formatearMoneda(transaccion.monto)}
       </td>
-      <td className="text-end">
+            <td className="text-end">
         <button
-          className="btn btn-sm btn-outline-warning me-1"
+          className="btn-action btn-action-edit"
           title="Editar"
           onClick={() => onEditar(transaccion)}
         >
           <i className="bi bi-pencil-fill"></i>
         </button>
         <button
-          className="btn btn-sm btn-outline-danger"
+          className="btn-action btn-action-delete"
           title="Eliminar"
           onClick={() => onEliminar(transaccion.id)}
         >
