@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CATEGORIAS_INGRESO, CATEGORIAS_GASTO } from "../data/categories";
+import { CATEGORIAS_INGRESO, CATEGORIAS_GASTO, METODOS_PAGO } from "../data/categories";
 import { fechaHoy } from "../utils/helpers";
 
 // Estado inicial "vacío" del formulario, reutilizado tanto al montar
@@ -9,6 +9,9 @@ const formularioVacio = {
   descripcion: "",
   monto: "",
   categoria: "",
+  categoriaOtro: "",
+  metodoPago: "",
+  metodoPagoOtro: "",
   fecha: fechaHoy(),
 };
 
@@ -19,10 +22,30 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
   const [errores, setErrores] = useState({});
 
   // Cuando el usuario pulsa "Editar" en un elemento de la lista,
-  // el formulario se rellena con los datos de esa transacción.
+  // el formulario se rellena con los datos de esa transacción. Si la
+  // categoría o el método de pago guardados no están en las listas
+  // predefinidas, es porque el usuario escribió algo personalizado en
+  // "Otros" — en ese caso se selecciona "Otros" y se recupera el texto.
   useEffect(() => {
     if (transaccionEditar) {
-      setFormulario(transaccionEditar);
+      const categoriasProbables =
+        transaccionEditar.tipo === "ingreso" ? CATEGORIAS_INGRESO : CATEGORIAS_GASTO;
+
+      const categoriaEsPersonalizada =
+        transaccionEditar.categoria &&
+        !categoriasProbables.includes(transaccionEditar.categoria);
+
+      const metodoEsPersonalizado =
+        transaccionEditar.metodoPago &&
+        !METODOS_PAGO.includes(transaccionEditar.metodoPago);
+
+      setFormulario({
+        ...transaccionEditar,
+        categoria: categoriaEsPersonalizada ? "Otros" : transaccionEditar.categoria,
+        categoriaOtro: categoriaEsPersonalizada ? transaccionEditar.categoria : "",
+        metodoPago: metodoEsPersonalizado ? "Otro" : transaccionEditar.metodoPago,
+        metodoPagoOtro: metodoEsPersonalizado ? transaccionEditar.metodoPago : "",
+      });
       setErrores({});
     }
   }, [transaccionEditar]);
@@ -37,7 +60,10 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
       [name]: value,
       // Si el usuario cambia el tipo, la categoría anterior ya no es
       // válida (pertenecía al otro tipo), así que se limpia.
-      ...(name === "tipo" ? { categoria: "" } : {}),
+      ...(name === "tipo" ? { categoria: "", categoriaOtro: "" } : {}),
+      // Si deja de estar en "Otros" / "Otro", se limpia el texto libre.
+      ...(name === "categoria" && value !== "Otros" ? { categoriaOtro: "" } : {}),
+      ...(name === "metodoPago" && value !== "Otro" ? { metodoPagoOtro: "" } : {}),
     }));
   }
 
@@ -59,6 +85,14 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
 
     if (!formulario.categoria) {
       nuevosErrores.categoria = "Selecciona una categoría.";
+    } else if (formulario.categoria === "Otros" && !formulario.categoriaOtro.trim()) {
+      nuevosErrores.categoriaOtro = "Escribe el nombre de la categoría.";
+    }
+
+    if (!formulario.metodoPago) {
+      nuevosErrores.metodoPago = "Selecciona un método de pago.";
+    } else if (formulario.metodoPago === "Otro" && !formulario.metodoPagoOtro.trim()) {
+      nuevosErrores.metodoPagoOtro = "Escribe el método de pago.";
     }
 
     if (!formulario.fecha) {
@@ -74,8 +108,26 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
 
     if (!validar()) return;
 
+    // Si se eligió "Otros"/"Otro", se guarda el texto que escribió el
+    // usuario en vez de la palabra genérica.
+    const categoriaFinal =
+      formulario.categoria === "Otros" && formulario.categoriaOtro.trim()
+        ? formulario.categoriaOtro.trim()
+        : formulario.categoria;
+
+    const metodoPagoFinal =
+      formulario.metodoPago === "Otro" && formulario.metodoPagoOtro.trim()
+        ? formulario.metodoPagoOtro.trim()
+        : formulario.metodoPago;
+
+    // categoriaOtro y metodoPagoOtro son solo campos de apoyo del
+    // formulario; no se guardan en la transacción final.
+    const { categoriaOtro, metodoPagoOtro, ...datosBase } = formulario;
+
     onGuardar({
-      ...formulario,
+      ...datosBase,
+      categoria: categoriaFinal,
+      metodoPago: metodoPagoFinal,
       monto: Number(formulario.monto),
     });
 
@@ -140,6 +192,7 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
             {/* Descripción */}
             <div className="col-md-6">
               <label htmlFor="descripcion" className="form-label">
+                <i className="bi bi-pencil text-muted"></i>
                 Descripción
               </label>
               <input
@@ -161,6 +214,7 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
             {/* Monto */}
             <div className="col-md-3">
               <label htmlFor="monto" className="form-label">
+                <i className="bi bi-cash text-muted"></i>
                 Monto ($)
               </label>
               <input
@@ -181,6 +235,7 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
             {/* Fecha */}
             <div className="col-md-3">
               <label htmlFor="fecha" className="form-label">
+                <i className="bi bi-calendar-event text-muted"></i>
                 Fecha
               </label>
               <input
@@ -199,6 +254,7 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
             {/* Categoría */}
             <div className="col-md-6">
               <label htmlFor="categoria" className="form-label">
+                <i className="bi bi-tag text-muted"></i>
                 Categoría
               </label>
               <select
@@ -222,8 +278,81 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
               )}
             </div>
 
+            {/* Categoría personalizada (solo si eligió "Otros") */}
+            {formulario.categoria === "Otros" && (
+              <div className="col-md-6 campo-personalizado">
+                <label htmlFor="categoriaOtro" className="form-label">
+                  Especifica la categoría
+                </label>
+                <input
+                  type="text"
+                  className={`form-control ${
+                    errores.categoriaOtro ? "is-invalid" : ""
+                  }`}
+                  id="categoriaOtro"
+                  name="categoriaOtro"
+                  placeholder="Ej. Mascotas"
+                  value={formulario.categoriaOtro}
+                  onChange={manejarCambio}
+                />
+                {errores.categoriaOtro && (
+                  <div className="invalid-feedback">{errores.categoriaOtro}</div>
+                )}
+              </div>
+            )}
+
+            {/* Método de pago */}
+            <div className="col-md-6">
+              <label htmlFor="metodoPago" className="form-label">
+                <i className="bi bi-wallet2 text-muted"></i>
+                Método de pago
+              </label>
+              <select
+                className={`form-select ${
+                  errores.metodoPago ? "is-invalid" : ""
+                }`}
+                id="metodoPago"
+                name="metodoPago"
+                value={formulario.metodoPago}
+                onChange={manejarCambio}
+              >
+                <option value="">Selecciona un método de pago</option>
+                {METODOS_PAGO.map((metodo) => (
+                  <option key={metodo} value={metodo}>
+                    {metodo}
+                  </option>
+                ))}
+              </select>
+              {errores.metodoPago && (
+                <div className="invalid-feedback">{errores.metodoPago}</div>
+              )}
+            </div>
+
+            {/* Método de pago personalizado (solo si eligió "Otro") */}
+            {formulario.metodoPago === "Otro" && (
+              <div className="col-md-6 campo-personalizado">
+                <label htmlFor="metodoPagoOtro" className="form-label">
+                  Especifica el método de pago
+                </label>
+                <input
+                  type="text"
+                  className={`form-control ${
+                    errores.metodoPagoOtro ? "is-invalid" : ""
+                  }`}
+                  id="metodoPagoOtro"
+                  name="metodoPagoOtro"
+                  placeholder="Ej. Vale de comida"
+                  value={formulario.metodoPagoOtro}
+                  onChange={manejarCambio}
+                />
+                {errores.metodoPagoOtro && (
+                  <div className="invalid-feedback">{errores.metodoPagoOtro}</div>
+                )}
+              </div>
+            )}
+
             {/* Botones */}
-            <div className="col-md-6 d-flex align-items-end gap-2">
+            <div className="col-12 d-flex align-items-end gap-2">
               <button
                 type="submit"
                 className={`btn flex-fill ${

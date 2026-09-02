@@ -114,8 +114,11 @@ main {
   }
 }
 
-
 /* --- Acciones de la tabla: íconos discretos, sin recuadro --- */
+.acciones-celda {
+  white-space: nowrap;
+}
+
 .btn-action {
   border: none;
   background: transparent;
@@ -128,7 +131,6 @@ main {
   font-size: 0.9rem;
   color: #8a978f;
   transition: background-color 0.15s ease, color 0.15s ease;
-  margin-left: 0.15rem;
 }
 
 .btn-action-edit:hover,
@@ -143,9 +145,80 @@ main {
   background-color: #f6dede;
 }
 
+/* --- Corrige el focus de los campos: Bootstrap trae el azul por
+   defecto "quemado" en el CSS, sin usar la variable de color, así
+   que hay que sobreescribirlo a mano para que combine con el tema. --- */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 0.25rem rgba(20, 99, 86, 0.2);
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--brand-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.form-control,
+.form-select {
+  border-color: #cfdad3;
+}
+
+.form-control:hover,
+.form-select:hover {
+  border-color: #a9c9c0;
+}
+
+/* Botones tipo Gasto/Ingreso seleccionados: quitar el foco azul del
+   btn-check y reforzar el color propio de cada uno. */
+.btn-check:checked + .btn-outline-danger {
+  background-color: var(--bad);
+  border-color: var(--bad);
+}
+.btn-check:checked + .btn-outline-success {
+  background-color: var(--ok);
+  border-color: var(--ok);
+}
+.btn-check:focus-visible + .btn {
+  box-shadow: 0 0 0 0.2rem rgba(20, 99, 86, 0.25);
+}
+.badge-metodo-pago {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #52685c;
+  background: #eef3ee;
+  border: 1px solid #d7e2da;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+}
+
+/* --- Aparición suave de los campos condicionales "Otros" --- */
+.campo-personalizado {
+  animation: campo-aparece 0.25s ease;
+}
+
+@keyframes campo-aparece {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .table-hover tbody tr,
-  .progress-bar {
+  .progress-bar,
+  .campo-personalizado {
     animation: none;
     transition: none;
   }

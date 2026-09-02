@@ -23,6 +23,16 @@ export const CATEGORIAS_GASTO = [
   "Otros",
 ];
 
+// Métodos de pago disponibles para cada transacción: indican de
+// dónde salió (o a dónde entró) el dinero.
+export const METODOS_PAGO = [
+  "Efectivo",
+  "Tarjeta de débito",
+  "Tarjeta de crédito",
+  "Transferencia bancaria",
+  "Otro",
+];
+
 // Colores asociados a cada categoría de gasto, usados en las
 // estadísticas (barras y distribución por categoría).
 export const COLORES_CATEGORIA = {
