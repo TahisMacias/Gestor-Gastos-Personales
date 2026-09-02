@@ -81,6 +81,8 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
       nuevosErrores.monto = "Ingresa un monto válido.";
     } else if (montoNumerico <= 0) {
       nuevosErrores.monto = "El monto debe ser mayor a 0.";
+    } else if (montoNumerico > 100000) {
+      nuevosErrores.monto = "El monto no puede superar $100,000.";
     }
 
     if (!formulario.categoria) {
@@ -97,6 +99,8 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
 
     if (!formulario.fecha) {
       nuevosErrores.fecha = "Selecciona una fecha.";
+    } else if (formulario.fecha > fechaHoy()) {
+      nuevosErrores.fecha = "La fecha no puede ser futura.";
     }
 
     setErrores(nuevosErrores);
@@ -244,6 +248,7 @@ function TransactionForm({ onGuardar, transaccionEditar, onCancelarEdicion }) {
                 id="fecha"
                 name="fecha"
                 value={formulario.fecha}
+                max={fechaHoy()}
                 onChange={manejarCambio}
               />
               {errores.fecha && (
